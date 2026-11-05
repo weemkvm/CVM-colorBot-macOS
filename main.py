@@ -4,16 +4,16 @@ import time
 import math
 import numpy as np
 import cv2
-import ctypes
 import sys
 import os
 
-# 瑷疆 AppUserModelID 浠ヤ究鍦?Windows 浠诲嫏娆勬纰洪’绀哄湒妯?
-try:
-    myappid = 'mycompany.colorbot.v2.0' # 浠绘剰鍞竴鐨勫瓧绗︿覆
-    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
-except Exception:
-    pass
+if sys.platform == "win32":
+    import ctypes
+    try:
+        myappid = "mycompany.colorbot.v2.0"
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+    except Exception:
+        pass
 
 from src.utils.config import config
 from src.utils.mouse import Mouse, is_button_pressed

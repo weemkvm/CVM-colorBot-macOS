@@ -40,9 +40,11 @@ except ImportError as e:
 try:
     import ctypes
     import os
-    # Try to load GStreamer DLL to check availability
-    # MSVC version uses gstreamer-1.0-0.dll, MinGW uses gst-1.0.dll
-    dll_names = ["gstreamer-1.0-0.dll", "gst-1.0.dll"]
+    import sys as _sys
+    if _sys.platform == "darwin":
+        dll_names = ["libgstreamer-1.0.0.dylib", "libgstreamer-1.0.dylib"]
+    else:
+        dll_names = ["gstreamer-1.0-0.dll", "gst-1.0.dll"]
     gst_dll = None
     
     # Try loading from PATH first
