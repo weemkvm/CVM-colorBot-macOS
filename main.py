@@ -3,9 +3,22 @@ import queue
 import time
 import math
 import numpy as np
-import cv2
 import sys
 import os
+
+if sys.platform == "darwin":
+    os.environ["OPENCV_VIDEOIO_PRIORITY_AVFOUNDATION"] = "1"
+
+import cv2
+
+if sys.platform == "darwin":
+    _cv2_imshow = cv2.imshow
+    def _safe_imshow(name, img):
+        try:
+            _cv2_imshow(name, img)
+        except Exception:
+            pass
+    cv2.imshow = _safe_imshow
 
 if sys.platform == "win32":
     import ctypes
