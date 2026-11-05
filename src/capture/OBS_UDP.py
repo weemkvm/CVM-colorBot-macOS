@@ -305,17 +305,28 @@ class OBS_UDP_Receiver:
         """Main receiving loop for UDP packets"""
         self.is_receiving = True
         logger.info("Started UDP receive loop")
-        
+        _packet_count = 0
+        _last_log_time = time.time()
+
         while not self.stop_event.is_set() and self.is_connected:
             try:
                 # Receive UDP packet
                 data, addr = self.socket.recvfrom(65536)  # Max UDP packet size
                 receive_time = time.time()
-                
+                _packet_count += 1
+
+                if receive_time - _last_log_time >= 5.0:
+                    logger.info(f"UDP: {_packet_count} packets received in last 5s from {addr}, buffer={len(self.mjpeg_buffer)}, fps={self.current_fps:.1f}")
+                    _packet_count = 0
+                    _last_log_time = receive_time
+
                 # Process MJPEG data
                 self._process_mjpeg_data(data, receive_time)
-                
+
             except socket.timeout:
+                if time.time() - _last_log_time >= 5.0:
+                    logger.info("UDP: No packets received (timeout)")
+                    _last_log_time = time.time()
                 continue
             except OSError as e:
                 if self.is_connected:
