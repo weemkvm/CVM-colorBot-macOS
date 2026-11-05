@@ -1,18 +1,24 @@
 from src.utils.debug_logger import log_print
-import ctypes
 import glob
 import importlib.util
 import os
 import sys
-from ctypes import wintypes
 
 from . import state
 from .keycodes import to_hid_code, to_vk_code
 
 _loaded_module_path = None
-_USER32 = ctypes.windll.user32
-_USER32.GetAsyncKeyState.argtypes = (wintypes.INT,)
-_USER32.GetAsyncKeyState.restype = wintypes.SHORT
+_USER32 = None
+
+if sys.platform == "win32":
+    import ctypes
+    from ctypes import wintypes
+    try:
+        _USER32 = ctypes.windll.user32
+        _USER32.GetAsyncKeyState.argtypes = (wintypes.INT,)
+        _USER32.GetAsyncKeyState.restype = wintypes.SHORT
+    except Exception:
+        _USER32 = None
 
 _VK_BY_IDX = {
     0: 0x01,  # VK_LBUTTON
@@ -127,6 +133,8 @@ def disconnect():
 
 
 def is_button_pressed(idx: int) -> bool:
+    if _USER32 is None:
+        return False
     try:
         vk = _VK_BY_IDX.get(int(idx))
     except Exception:

@@ -6,8 +6,11 @@ import customtkinter as ctk
 import tkinter as tk
 from tkinter import filedialog, messagebox, simpledialog
 import ctypes
-from ctypes import wintypes
 import os
+if os.name == "nt":
+    from ctypes import wintypes
+else:
+    wintypes = None
 import json
 import cv2
 import threading
@@ -83,14 +86,17 @@ GMEM_ZEROINIT = 0x0040
 GHND = GMEM_MOVEABLE | GMEM_ZEROINIT
 
 
-class DROPFILES(ctypes.Structure):
-    _fields_ = [
-        ("pFiles", wintypes.DWORD),
-        ("pt_x", wintypes.LONG),
-        ("pt_y", wintypes.LONG),
-        ("fNC", wintypes.BOOL),
-        ("fWide", wintypes.BOOL),
-    ]
+if os.name == "nt":
+    class DROPFILES(ctypes.Structure):
+        _fields_ = [
+            ("pFiles", wintypes.DWORD),
+            ("pt_x", wintypes.LONG),
+            ("pt_y", wintypes.LONG),
+            ("fNC", wintypes.BOOL),
+            ("fWide", wintypes.BOOL),
+        ]
+else:
+    DROPFILES = None
 
 
 if os.name == "nt":
