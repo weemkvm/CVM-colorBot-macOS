@@ -7,6 +7,7 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, simpledialog
 import ctypes
 import os
+import sys
 if os.name == "nt":
     from ctypes import wintypes
 else:
@@ -215,13 +216,16 @@ class ViewerApp(ctk.CTk):
         
         # --- Window setup ---
         self.title("CVM colorBot")
-        self.geometry("1280x950")
+        if sys.platform == "darwin":
+            self.geometry("1100x750")
+            self.resizable(True, True)
+        else:
+            self.geometry("1280x950")
         self._legacy_ui_mode = bool(getattr(config, "legacy_ui_mode", False))
         _apply_theme_preset("classic" if self._legacy_ui_mode else "neon")
         
-        # 注意: 若啟用 overrideredirect(True)，系統框線與 taskbar 行為可能不同
-        # If you need normal window decorations, keep it commented out.
-        self.overrideredirect(True)
+        if sys.platform != "darwin":
+            self.overrideredirect(True)
         self._is_maximized = False
         self._restore_geometry = self.geometry()
         self._taskbar_style_applied = False
