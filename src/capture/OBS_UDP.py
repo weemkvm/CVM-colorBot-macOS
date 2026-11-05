@@ -122,8 +122,10 @@ class OBS_UDP_Receiver:
             self.socket.settimeout(5.0)  # 5 second timeout
             
             # Bind to receive UDP packets
+            logger.info(f"Binding UDP socket to {self.ip}:{self.port}")
             self.socket.bind((self.ip, self.port))
-            
+            logger.info(f"UDP socket bound successfully to {self.ip}:{self.port}")
+
             self.is_connected = True
             self.stop_event.clear()
             

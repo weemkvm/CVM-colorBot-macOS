@@ -203,21 +203,30 @@ class CaptureService:
         self.mode = "UDP"
         self._ip = ip
         self._port = int(port)
-        
+
+        log_print(f"[Capture] UDP connect attempt: ip={ip}, port={port}")
+        log_print(f"[Capture] HAS_UDP={HAS_UDP}, udp_manager={self.udp_manager is not None}")
+
         if not HAS_UDP:
+            log_print("[Capture] UDP module not loaded")
             return False, "UDP module not loaded (OBS_UDP.py missing or failed to import)"
-            
+
         if not self.udp_manager:
+            log_print("[Capture] UDP manager is None")
             return False, "UDP manager not initialized"
-            
+
         try:
+            log_print(f"[Capture] Calling udp_manager.connect({ip}, {port})")
             success = self.udp_manager.connect(self._ip, self._port, target_fps=0)
+            log_print(f"[Capture] UDP connect result: {success}")
             if success:
                 return True, None
             else:
                 return False, "Connection failed - check IP/Port and ensure OBS is streaming"
         except Exception as e:
             log_print(f"[Capture] UDP connection exception: {e}")
+            import traceback
+            log_print(traceback.format_exc())
             return False, str(e)
 
     def connect_capture_card(self, config):
